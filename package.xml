@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format2.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="2">
+  <name>ros_esm_dependencies_generator</name>
+  <version>0.1.0</version>
+  <description>
+    ROS ESM missing dependencies sources generator.
+  </description>
+
+  <maintainer email="canonical-robotics-community-group@canonical.com">Ubuntu Robotics</maintainer>
+
+  <license>GNU General Public License v3.0</license>
+
+  <author email="canonical-robotics-community-group@canonical.com">Ubuntu Robotics</author>
+
+
+  <exec_depend>ros2run</exec_depend>
+  <exec_depend>python3-rosdep</exec_depend>
+  <exec_depend>python3-rosinstall-generator</exec_depend>
+  <exec_depend>python3-setuptools</exec_depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>

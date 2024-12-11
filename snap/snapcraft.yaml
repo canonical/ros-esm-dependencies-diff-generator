@@ -1,0 +1,29 @@
+name: ros-esm-dependencies-generator
+version: '0.1.0'
+summary: ROS ESM missing dependencies sources generator
+description: |
+ This snap helps you create a .rosinstall file
+ that lists all the dependencies not present in
+ your workspace nor in ROS ESM.
+
+ More on ESM at: https://ubuntu.com/robotics/ros-esm.
+
+confinement: strict
+base: core24
+
+parts:
+ workspace:
+   plugin: colcon
+   source: .
+   override-prime: |
+     craftctl default
+     # distutils has been removed from python 3.12
+     # fix comes from https://github.com/ros-infrastructure/rosdistro/pull/194
+     sed -i 's|from distutils.version import LooseVersion|from packaging.version import parse|g' usr/lib/python3/dist-packages/rosdistro/vcs.py
+     sed -i 's|return LooseVersion(cls._client_version) >= LooseVersion(version)|return parse(cls._client_version) >= parse(version)|g' usr/lib/python3/dist-packages/rosdistro/vcs.py
+
+apps:
+ ros-esm-dependencies-generator:
+   command: ros2 run ros_esm_dependencies_generator ros-esm-dependencies-generator
+   plugs: [network, network-bind, home]
+   extensions: [ros2-jazzy]
