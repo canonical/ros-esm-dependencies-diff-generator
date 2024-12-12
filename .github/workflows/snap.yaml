@@ -1,0 +1,185 @@
+name: snap
+on:
+  push:
+    tags:
+      - 'main/*'
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+  workflow_call:
+   inputs:
+      branch-name:
+        required: false
+        type: string
+        default: 'main'
+
+jobs:
+  build:
+    uses: canonical/robotics-actions-workflows/.github/workflows/build.yaml@main
+    with:
+      runs-on: "ubuntu-latest"
+      snapcraft-source-subdir: "."
+      snapcraft-enable-experimental-extensions: true
+      git-ref: ${{ inputs.branch-name == '' && github.ref || inputs.branch-name }}
+
+  test-ros:
+    needs: [build]
+    uses: ./.github/workflows/test.yaml
+    secrets: inherit
+    strategy:
+      matrix:
+        VERSIONS: [
+          # 16.04 is currently ignored due to https://github.com/canonical/multipass/issues/3874
+          #{ros: "kinetic", host: "self-hosted-linux-amd64-jammy-xlarge", ubuntu: "16.04", python: "python"},
+          {ros: "melodic", host: "self-hosted-linux-amd64-jammy-xlarge", ubuntu: "18.04", python: "python"}
+        ]
+    with:
+      runs-on: ${{ matrix.VERSIONS.host }}
+      multipass-image: ${{ matrix.VERSIONS.ubuntu }}
+      snap-install-args: "--dangerous"
+      snap-test-script: |
+          #!/bin/bash
+
+          set -euxo pipefail
+
+          export HOME=/home/ubuntu
+
+          cd $HOME
+
+          sudo apt install -y ubuntu-advantage-tools
+
+          sudo pro attach $PRO_TOKEN
+
+          sudo pro status
+
+          sudo pro enable ros --assume-yes
+
+          sudo apt update
+          sudo apt upgrade --yes
+
+          sudo apt-get install ros-${{ matrix.VERSIONS.ros }}-ros-base --yes
+
+          set +u
+          . /opt/ros/${{ matrix.VERSIONS.ros }}/setup.bash
+          set -u
+
+          sudo apt install ${{ matrix.VERSIONS.python }}-rosdep --yes
+
+          # init rosdep
+          sudo rosdep init
+          rosdep update
+
+          # install vcs tool
+
+          curl -s https://packagecloud.io/install/repositories/dirk-thomas/vcstool/script.deb.sh | sudo bash
+          sudo apt-get update
+          sudo apt-get install ${{ matrix.VERSIONS.python }}-vcstool
+
+          # download slam gmapping
+
+          mkdir -p ws/src
+          git clone https://github.com/ros-perception/slam_gmapping.git ws/src/
+
+          # generate dependencies
+
+          ros-esm-dependencies-diff-generator --rosdistro ${{ matrix.VERSIONS.ros }} -o dependencies.rosinstall --source ws/src/
+
+          cat dependencies.rosinstall
+
+          # install source dependencies
+
+          mkdir -p deps-ws/src
+          vcs import --shallow deps-ws/src < ./dependencies.rosinstall
+          rosdep install --ignore-src --from-paths deps-ws/src --default-yes
+          cd deps-ws
+          catkin_make -DCMAKE_BUILD_TYPE=Release
+          set +u
+          . devel/setup.bash
+          set -u
+          cd ../
+
+          # build the demos
+          rosdep install --ignore-src --from-paths ws/src --default-yes
+          cd ws
+          catkin_make -DCMAKE_BUILD_TYPE=Release
+
+          sudo pro detach --assume-yes
+
+  test-ros2:
+    needs: [build]
+    uses: ./.github/workflows/test.yaml
+    secrets: inherit
+    strategy:
+      matrix:
+        VERSIONS: [{ros: "foxy", ubuntu: "ubuntu-20.04"}]
+    with:
+      runs-on: ${{ matrix.VERSIONS.ubuntu }}
+      snap-install-args: "--dangerous"
+      snap-test-script: |
+          #!/bin/bash
+
+          set -euxo pipefail
+
+          sudo apt install -y ubuntu-advantage-tools
+
+          sudo pro attach $PRO_TOKEN
+
+          sudo pro status
+
+          sudo pro enable ros --assume-yes
+
+          sudo apt update
+          sudo apt upgrade --yes
+
+          sudo apt-get install ros-${{ matrix.VERSIONS.ros }}-ros-base --yes
+
+          sudo apt-get install python3-colcon-common-extensions --yes
+
+          set +u
+          . /opt/ros/${{ matrix.VERSIONS.ros }}/setup.bash
+          set -u
+
+          sudo apt install python3-rosdep --yes
+
+          # init rosdep
+          sudo rosdep init
+          rosdep update
+
+          # install vcs tool
+
+          curl -s https://packagecloud.io/install/repositories/dirk-thomas/vcstool/script.deb.sh | sudo bash
+          sudo apt-get update
+          sudo apt-get install python3-vcstool
+
+          # download ros2 demos
+
+          mkdir -p ws/src
+          git clone https://github.com/ros2/demos.git -b ${{ matrix.VERSIONS.ros }} ws/src/
+
+          # generate dependencies
+
+          ros-esm-dependencies-diff-generator --rosdistro ${{ matrix.VERSIONS.ros }} -o dependencies.rosinstall --source ws/src/
+
+          cat dependencies.rosinstall
+
+          # install source dependencies
+
+          mkdir -p deps-ws/src
+          vcs import --shallow deps-ws/src < ./dependencies.rosinstall
+          rosdep install --ignore-src --from-paths deps-ws/src --default-yes
+          cd deps-ws
+          colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release
+          set +u
+          . install/setup.bash
+          set -u
+          cd ../
+
+          # build the demos
+          rosdep install --ignore-src --from-paths ws/src --default-yes
+          cd ws
+          colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release
+
+          sudo pro detach --assume-yes
