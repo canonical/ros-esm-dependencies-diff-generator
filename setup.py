@@ -1,7 +1,7 @@
 from setuptools import find_packages
 from setuptools import setup
 
-package_name = 'ros_esm_dependencies_generator'
+package_name = 'ros_esm_dependencies_diff_generator'
 
 setup(
     name=package_name,
@@ -26,7 +26,7 @@ setup(
     license='GNU General Public License v3.0',
     entry_points={
         'console_scripts': [
-            'ros-esm-dependencies-generator = ros_esm_dependencies_generator.ros_esm_dependencies_generator:main',
+            'ros-esm-dependencies-diff-generator = ros_esm_dependencies_diff_generator.ros_esm_dependencies_diff_generator:main',
         ],
     },
 )

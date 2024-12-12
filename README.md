@@ -1,4 +1,4 @@
-# ros-esm-dependencies-generator
+# ros-esm-dependencies-diff-generator
 ROS ESM missing dependencies sources generator
 
 This snap helps you create a .rosinstall file
@@ -20,13 +20,13 @@ SNAPCRAFT_ENABLE_EXPERIMENTAL_EXTENSIONS=1 snapcraft
 Install the snap
 
 ```
-snap install ros-esm-dependencies-generator_*.snap --dangerous
+snap install ros-esm-dependencies-diff-generator_*.snap --dangerous
 ```
 
 ## Usage
 
 ```
-usage: ros-esm-dependencies-generator [-h] --rosdistro {noetic,foxy,humble,jazzy}
+usage: ros-esm-dependencies-diff-generator [-h] --rosdistro {noetic,foxy,humble,jazzy}
                                       [--depend-types DEPEND_TYPES [DEPEND_TYPES ...]] -o
                                       OUTPUT_FILE -s SOURCE
 
@@ -50,7 +50,7 @@ options:
 In a ROS 2 ESM foxy environment with a workspace located in `ros-ws/src`:
 
 ```
-ros-esm-dependencies-generator --rosdistro foxy -o dependencies.rosinstall --source ros-ws/src/
+ros-esm-dependencies-diff-generator --rosdistro foxy -o dependencies.rosinstall --source ros-ws/src/
 ```
 
 We can now pull, build and sources our dependencies:

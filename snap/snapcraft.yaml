@@ -1,4 +1,4 @@
-name: ros-esm-dependencies-generator
+name: ros-esm-dependencies-diff-generator
 version: '0.1.0'
 summary: ROS ESM missing dependencies sources generator
 description: |
@@ -23,7 +23,7 @@ parts:
      sed -i 's|return LooseVersion(cls._client_version) >= LooseVersion(version)|return parse(cls._client_version) >= parse(version)|g' usr/lib/python3/dist-packages/rosdistro/vcs.py
 
 apps:
- ros-esm-dependencies-generator:
-   command: ros2 run ros_esm_dependencies_generator ros-esm-dependencies-generator
+ ros-esm-dependencies-diff-generator:
+   command: ros2 ros_esm_dependencies_diff_generator ros-esm-dependencies-diff-generator
    plugs: [network, network-bind, home]
    extensions: [ros2-jazzy]
