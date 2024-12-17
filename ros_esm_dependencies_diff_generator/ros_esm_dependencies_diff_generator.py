@@ -49,20 +49,46 @@ def main():
         help="Source directory to look for packages.",
     )
 
+    parser.add_argument(
+        "--reference-ros-index-url",
+        type=str,
+        default="https://raw.githubusercontent.com/ros/rosdistro/master/index-v4.yaml",
+        help="The packages reference ROS index URL.",
+    )
+
+    parser.add_argument(
+        "--esm-ros-index-url",
+        type=str,
+        default="https://ros.robotics.ubuntu.com/rosdistros/index-v4.yaml",
+        help="The ESM packages reference ROS index URL.",
+    )
+
+    parser.add_argument(
+        "--ignore-packages",
+        nargs="+",
+        default=[
+            "connext_cmake_module",
+            "cyclonedds",
+            "rmw_connext_cpp",
+            "rmw_connext_shared_cpp",
+            "rmw_cyclonedds_cpp",
+            "rosidl_typesupport_connext_c",
+            "rosidl_typesupport_connext_cpp",
+        ],
+        help="A list of packages to ignore in the dependencies."
+        "The default is: ignore alternative DDS implementation packages.",
+    )
+
     args = parser.parse_args()
 
-    index = rosdistro.get_index(
-        "https://raw.githubusercontent.com/ros/rosdistro/master/index-v4.yaml"
-    )
-    esm_index = rosdistro.get_index(
-        "https://ros.robotics.ubuntu.com/rosdistros/index-v4.yaml"
-    )
+    index = rosdistro.get_index(args.reference_ros_index_url)
+    esm_index = rosdistro.get_index(args.esm_ros_index_url)
 
     esm_cache = rosdistro.get_distribution_cache(esm_index, args.rosdistro)
-    cache = rosdistro.get_distribution_cache(index, args.rosdistro)
+    ref_cache = rosdistro.get_distribution_cache(index, args.rosdistro)
 
     upstream_distribution = rosdistro.get_cached_distribution(
-        index, args.rosdistro, cache=cache
+        index, args.rosdistro, cache=ref_cache
     )
 
     dependency_walker = DependencyWalker(upstream_distribution)
@@ -78,16 +104,7 @@ def main():
             source_package.name,
             args.depend_types,
             ros_packages_only=True,
-            # ignore alternative DDS middleware
-            ignore_pkgs=[
-                "connext_cmake_module",
-                "cyclonedds",
-                "rmw_connext_cpp",
-                "rmw_connext_shared_cpp",
-                "rmw_cyclonedds_cpp",
-                "rosidl_typesupport_connext_c",
-                "rosidl_typesupport_connext_cpp",
-            ],
+            ignore_pkgs=args.ignore_packages,
         )
         dependencies.update(recursive_dependencies)
 

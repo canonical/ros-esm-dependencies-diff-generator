@@ -1,6 +1,6 @@
 name: ros-esm-dependencies-diff-generator
 version: '0.1.0'
-summary: ROS ESM missing dependencies sources generator
+summary: ROS ESM missing dependencies rosinstall file generator
 description: |
  This snap helps you create a .rosinstall file
  that lists all the dependencies not present in

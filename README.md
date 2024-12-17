@@ -1,5 +1,5 @@
 # ros-esm-dependencies-diff-generator
-ROS ESM missing dependencies sources generator
+ROS ESM missing dependencies rosinstall file generator.
 
 This snap helps you create a .rosinstall file
 that lists all the dependencies not present in
@@ -13,13 +13,13 @@ This program is meant to work with ROS 2 and ROS.
 
 Build the snap:
 
-```
+```bash
 SNAPCRAFT_ENABLE_EXPERIMENTAL_EXTENSIONS=1 snapcraft
 ```
 
 Install the snap
 
-```
+```bash
 snap install ros-esm-dependencies-diff-generator_*.snap --dangerous
 ```
 
@@ -39,6 +39,9 @@ options:
                         The ROS distro to evaluate.
   --depend-types DEPEND_TYPES [DEPEND_TYPES ...]
                         A list of the depend types to list.
+  --ignore-packages IGNORE_PACKAGES [IGNORE_PACKAGES ...]
+                        A list of packages to ignore in the dependencies.
+                        The default is: ignore alternative DDS implementation packages.
   -o OUTPUT_FILE, --output-file OUTPUT_FILE
                         The .rosinstall file to write.
   -s SOURCE, --source SOURCE
@@ -49,13 +52,13 @@ options:
 
 In a ROS 2 ESM foxy environment with a workspace located in `ros-ws/src`:
 
-```
+```bash
 ros-esm-dependencies-diff-generator --rosdistro foxy -o dependencies.rosinstall --source ros-ws/src/
 ```
 
 We can now pull, build and sources our dependencies:
 
-```
+```bash
 mkdir -p deps-ws/src
 vcs import --shallow deps-ws/src < ~/deps.rosinstall
 cd deps-ws
@@ -65,7 +68,7 @@ colcon build
 ```
 
 We can now build our workspace:
-```
+```bash
 cd ros-ws
 rosdep install --ignore-src --from-paths src --default-yes
 colcon build
