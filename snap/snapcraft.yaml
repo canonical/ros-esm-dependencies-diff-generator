@@ -24,6 +24,6 @@ parts:
 
 apps:
  ros-esm-dependencies-diff-generator:
-   command: ros2 ros_esm_dependencies_diff_generator ros-esm-dependencies-diff-generator
+   command: ros2 run ros_esm_dependencies_diff_generator ros-esm-dependencies-diff-generator
    plugs: [network, network-bind, home]
    extensions: [ros2-jazzy]
