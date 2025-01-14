@@ -183,3 +183,12 @@ jobs:
           colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release
 
           sudo pro detach --assume-yes
+
+  publish:
+    needs: [build, test-ros, test-ros2]
+    uses: canonical/robotics-actions-workflows/.github/workflows/publish.yaml@main
+    with:
+      snap-track: latest
+    secrets:
+      snapstore-login: ${{ secrets.STORE_LOGIN }}
+    if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
