@@ -1,0 +1,9 @@
+name: Monthly
+on:
+  schedule:
+    - cron: '0 0 1 * *'
+  workflow_dispatch:
+
+jobs:
+  main:
+    uses: canonical/ros-esm-dependencies-diff-generator/.github/workflows/snap.yaml@main
