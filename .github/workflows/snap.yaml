@@ -34,7 +34,7 @@ jobs:
         VERSIONS: [
           # 16.04 is currently ignored due to https://github.com/canonical/multipass/issues/3874
           #{ros: "kinetic", host: "self-hosted-linux-amd64-jammy-xlarge", ubuntu: "16.04", python: "python"},
-          {ros: "melodic", host: "self-hosted-linux-amd64-jammy-xlarge", ubuntu: "18.04", python: "python"}
+          {ros: "melodic", host: "self-hosted-linux-amd64-noble-xlarge", ubuntu: "18.04", python: "python"}
         ]
     with:
       runs-on: ${{ matrix.VERSIONS.host }}
@@ -114,7 +114,9 @@ jobs:
     secrets: inherit
     strategy:
       matrix:
-        VERSIONS: [{ros: "foxy", ubuntu: "ubuntu-20.04"}]
+        VERSIONS: [
+          {ros: "foxy", host: "self-hosted-linux-amd64-noble-xlarge", ubuntu: "20.04", python: "python"}
+        ]
     with:
       runs-on: ${{ matrix.VERSIONS.ubuntu }}
       snap-install-args: "--dangerous"
@@ -122,6 +124,10 @@ jobs:
           #!/bin/bash
 
           set -euxo pipefail
+
+          export HOME=/home/ubuntu
+
+          cd $HOME
 
           sudo apt install -y ubuntu-advantage-tools
 
