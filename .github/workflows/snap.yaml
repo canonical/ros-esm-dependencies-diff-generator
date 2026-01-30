@@ -21,7 +21,6 @@ jobs:
     uses: canonical/robotics-actions-workflows/.github/workflows/build.yaml@main
     with:
       runs-on: "ubuntu-latest"
-      snapcraft-source-subdir: "."
       snapcraft-enable-experimental-extensions: true
       git-ref: ${{ inputs.branch-name == '' && github.ref || inputs.branch-name }}
 
