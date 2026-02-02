@@ -7,3 +7,4 @@ on:
 jobs:
   main:
     uses: canonical/ros-esm-dependencies-diff-generator/.github/workflows/snap.yaml@main
+
