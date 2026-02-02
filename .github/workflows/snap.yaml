@@ -49,7 +49,7 @@ jobs:
 
           cd $HOME
 
-          sudo apt install -y ubuntu-advantage-tools
+          sudo apt install -y ubuntu-pro-client
 
           sudo pro attach $PRO_TOKEN
 
@@ -129,7 +129,7 @@ jobs:
 
           cd $HOME
 
-          sudo apt install -y ubuntu-advantage-tools
+          sudo apt install -y ubuntu-pro-client
 
           sudo pro attach $PRO_TOKEN
 
