@@ -118,7 +118,8 @@ jobs:
           {ros: "foxy", host: "self-hosted-linux-amd64-noble-xlarge", ubuntu: "20.04", python: "python"}
         ]
     with:
-      runs-on: ${{ matrix.VERSIONS.ubuntu }}
+      runs-on: ${{ matrix.VERSIONS.host }}
+      multipass-image: ${{ matrix.VERSIONS.ubuntu }}
       snap-install-args: "--dangerous"
       snap-test-script: |
           #!/bin/bash
