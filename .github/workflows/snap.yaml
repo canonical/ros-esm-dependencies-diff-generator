@@ -33,7 +33,8 @@ jobs:
         VERSIONS: [
           # 16.04 is currently ignored due to https://github.com/canonical/multipass/issues/3874
           #{ros: "kinetic", host: "self-hosted-linux-amd64-jammy-xlarge", ubuntu: "16.04", python: "python"},
-          {ros: "melodic", host: "self-hosted-linux-amd64-noble-xlarge", ubuntu: "18.04", python: "python"}
+          {ros: "melodic", host: "self-hosted-linux-amd64-noble-xlarge", ubuntu: "18.04", python: "python"},
+          {ros: "noetic", host: "self-hosted-linux-amd64-noble-xlarge", ubuntu: "20.04", python: "python3"}
         ]
     with:
       runs-on: ${{ matrix.VERSIONS.host }}
