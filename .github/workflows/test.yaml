@@ -34,24 +34,9 @@ on:
         required: false
 
 jobs:
-  prepare-test-runners:
-    runs-on: ubuntu-latest
-    outputs:
-      runs-on: ${{ steps.string-to-json.outputs.json }}
-    steps:
-      - name: String to JSON list
-        id: string-to-json
-        uses: canonical/robotics-actions-workflows/string-to-json@main
-        with:
-          string: ${{ inputs.runs-on }}
-
   test:
     needs: [prepare-test-runners]
-    runs-on: ${{ matrix.runs-on }}
-    strategy:
-      fail-fast: false
-      matrix:
-        runs-on: ${{ fromJSON(needs.prepare-test-runners.outputs.runs-on) }}
+    runs-on: ${{ inputs.runs-on }}
     steps:
 
       - name: Find out the arch
