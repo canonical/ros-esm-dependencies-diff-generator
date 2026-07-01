@@ -98,6 +98,31 @@ jobs:
           done
         if: "${{ inputs.multipass-image != '' }}"
 
+      - name: Collect Multipass diagnostics on failure
+        if: ${{ failure() && inputs.multipass-image != '' }}
+        run: |
+          set +e
+          set -x
+
+          echo "=== multipass client ==="
+          multipass version || true
+          multipass list || true
+
+          echo "=== snap/systemd ==="
+          sudo snap list multipass || true
+          sudo snap services multipass || true
+          sudo snap changes multipass || true
+          sudo systemctl status snap.multipass.multipassd.service --no-pager || true
+
+          echo "=== multipass logs ==="
+          sudo snap logs multipass -n 300 || true
+          sudo journalctl -u snap.multipass.multipassd.service --no-pager -n 400 || true
+
+          echo "=== cert/storage paths ==="
+          sudo ls -la /var/snap/multipass/common/data || true
+          sudo ls -la /var/snap/multipass/common/data/multipassd || true
+          sudo find /var/snap/multipass/common/data -maxdepth 4 -type f \( -name '*cert*' -o -name '*.pem' \) || true
+
       - name: Push the snap to the container
         run: |
           for snap in ${{ steps.get-snap-file.outputs.snap-files }}; do
