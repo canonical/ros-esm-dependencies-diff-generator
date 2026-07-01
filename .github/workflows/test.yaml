@@ -65,6 +65,12 @@ jobs:
           sudo snap install multipass
         if: "${{ inputs.multipass-image != '' }}"
 
+      - name: Wait for Multipass to settle
+        run: |
+          echo "Waiting 5 minutes after Multipass installation to let services settle"
+          sleep 300
+        if: "${{ inputs.multipass-image != '' }}"
+
       - name: Launch an LXD container
         run: |
           set -x # for debug purpose
